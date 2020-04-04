@@ -7,19 +7,21 @@ import 'package:image_crop/image_crop.dart';
 import 'package:image_picker/image_picker.dart';
 
 void main() {
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarBrightness: Brightness.dark,
-    statusBarIconBrightness: Brightness.light,
-    systemNavigationBarIconBrightness: Brightness.light,
-  ));
+  runApp(HomeApp());
+}
 
-  runApp(new MyApp());
+class HomeApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: MyApp(),
+    );
+  }
 }
 
 class MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => new _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -45,7 +47,6 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
 //    print("object---${cropKey.currentState.c}");
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       home: Scaffold(
           body: SafeArea(
             child: Container(
@@ -76,15 +77,16 @@ class _MyAppState extends State<MyApp> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-              title: Text(
-                'Current screenshot：',
-                style: TextStyle(
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.w300,
-                    color: Theme.of(context).primaryColor,
-                    letterSpacing: 1.1),
-              ),
-              content: Image.file(file));
+            title: Text(
+              'Current screenshot：',
+              style: TextStyle(
+                  fontFamily: 'Roboto',
+                  fontWeight: FontWeight.w300,
+                  color: Theme.of(context).primaryColor,
+                  letterSpacing: 1.1),
+            ),
+            content: Image.file(file),
+          );
         });
   }
 
