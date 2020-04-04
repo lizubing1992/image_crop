@@ -19,6 +19,7 @@ class Crop extends StatefulWidget {
   final double maximumScale;
   final bool alwaysShowGrid;
   final ImageErrorListener onImageError;
+  final double chipRadius; // 裁剪半径
 
   const Crop({
     Key key,
@@ -26,6 +27,7 @@ class Crop extends StatefulWidget {
     this.aspectRatio,
     this.maximumScale: 2.0,
     this.alwaysShowGrid: false,
+    this.chipRadius = 150,
     this.onImageError,
   })  : assert(image != null),
         assert(maximumScale != null),
@@ -33,28 +35,30 @@ class Crop extends StatefulWidget {
         super(key: key);
 
   Crop.file(
-    File file, {
-    Key key,
-    double scale = 1.0,
-    this.aspectRatio,
-    this.maximumScale: 2.0,
-    this.alwaysShowGrid: false,
-    this.onImageError,
-  })  : image = FileImage(file, scale: scale),
+      File file, {
+        Key key,
+        double scale = 1.0,
+        this.aspectRatio,
+        this.maximumScale: 2.0,
+        this.chipRadius = 150,
+        this.alwaysShowGrid: false,
+        this.onImageError,
+      })  : image = FileImage(file, scale: scale),
         assert(maximumScale != null),
         assert(alwaysShowGrid != null),
         super(key: key);
 
   Crop.asset(
-    String assetName, {
-    Key key,
-    AssetBundle bundle,
-    String package,
-    this.aspectRatio,
-    this.maximumScale: 2.0,
-    this.alwaysShowGrid: false,
-    this.onImageError,
-  })  : image = AssetImage(assetName, bundle: bundle, package: package),
+      String assetName, {
+        Key key,
+        AssetBundle bundle,
+        String package,
+        this.aspectRatio,
+        this.maximumScale: 2.0,
+        this.chipRadius = 150,
+        this.alwaysShowGrid: false,
+        this.onImageError,
+      })  : image = AssetImage(assetName, bundle: bundle, package: package),
         assert(maximumScale != null),
         assert(alwaysShowGrid != null),
         super(key: key);
@@ -92,11 +96,11 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
     return _view.isEmpty
         ? null
         : Rect.fromLTWH(
-            _area.left * _view.width / _scale - _view.left,
-            _area.top * _view.height / _scale - _view.top,
-            _area.width * _view.width / _scale,
-            _area.height * _view.height / _scale,
-          );
+      _area.left * _view.width / _scale - _view.left,
+      _area.top * _view.height / _scale - _view.top,
+      _area.width * _view.width / _scale,
+      _area.height * _view.height / _scale,
+    );
   }
 
   bool get _isEnabled => !_view.isEmpty && _image != null;
@@ -210,7 +214,7 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
 
   Size get _boundaries =>
       _surfaceKey.currentContext.size -
-      Offset(_kCropHandleSize, _kCropHandleSize);
+          Offset(_kCropHandleSize, _kCropHandleSize);
 
   Offset _getLocalPoint(Offset point) {
     final RenderBox box = _surfaceKey.currentContext.findRenderObject();
@@ -233,7 +237,12 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
     if (imageWidth == null || imageHeight == null) {
       return Rect.zero;
     }
-    final width = 1.0;
+    final _deviceWidth =
+        MediaQuery.of(context).size.width - (2 * _kCropHandleSize);
+    final _areaOffset = (_deviceWidth - (widget.chipRadius * 2));
+    final _areaOffsetRadio = _areaOffset / _deviceWidth;
+    final width = 1.0 - _areaOffsetRadio;
+
     final height = (imageWidth * viewWidth * width) /
         (imageHeight * viewHeight * (widget.aspectRatio ?? 1.0));
     return Rect.fromLTWH((1.0 - width) / 2, (1.0 - height) / 2, width, height);
@@ -329,22 +338,22 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
 
   Rect _getViewInBoundaries(double scale) {
     return Offset(
-          max(
-            min(
-              _view.left,
-              _area.left * _view.width / scale,
-            ),
-            _area.right * _view.width / scale - 1.0,
-          ),
-          max(
-            min(
-              _view.top,
-              _area.top * _view.height / scale,
-            ),
-            _area.bottom * _view.height / scale - 1.0,
-          ),
-        ) &
-        _view.size;
+      max(
+        min(
+          _view.left,
+          _area.left * _view.width / scale,
+        ),
+        _area.right * _view.width / scale - 1.0,
+      ),
+      max(
+        min(
+          _view.top,
+          _area.top * _view.height / scale,
+        ),
+        _area.bottom * _view.height / scale - 1.0,
+      ),
+    ) &
+    _view.size;
   }
 
   double get _maximumScale => widget.maximumScale;

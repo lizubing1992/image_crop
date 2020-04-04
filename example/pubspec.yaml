@@ -11,14 +11,21 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^0.1.3
-  image_picker: ^0.6.2+3
+  #图片裁剪
+  #  image_crop: ^0.3.2
+  #拍照相册
+  #  image_picker: 0.6.0+10
+  image_picker:
+    git:
+      url: https://github.com/MrLiuYS/plugins.git
+      ref: image_picker
+  image_crop:
+    path: ../
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  image_crop:
-    path: ../
 
 flutter:
   uses-material-design: true

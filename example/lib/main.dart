@@ -37,17 +37,55 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+//    print("object---${cropKey.currentState.c}");
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SafeArea(
-        child: Container(
-          color: Colors.black,
-          padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 20.0),
-          child: _sample == null ? _buildOpeningImage() : _buildCroppingImage(),
-        ),
-      ),
+      home: Scaffold(
+          body: SafeArea(
+            child: Container(
+              color: Colors.black,
+              child: _sample == null
+                  ? _buildOpeningImage()
+                  : _buildCroppingImage(),
+            ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              File image = await _cropImage();
+              showImage(context, image);
+            },
+            tooltip: 'Increment',
+            child: Text('Crop'),
+          )),
     );
+  }
+
+  Future<Null> showImage(BuildContext context, File file) async {
+    new FileImage(file)
+        .resolve(new ImageConfiguration())
+        .addListener(ImageStreamListener((ImageInfo info, bool _) {
+      print('-------------------------------------------$info');
+    }));
+    return showDialog<Null>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              title: Text(
+                'Current screenshot：',
+                style: TextStyle(
+                    fontFamily: 'Roboto',
+                    fontWeight: FontWeight.w300,
+                    color: Theme.of(context).primaryColor,
+                    letterSpacing: 1.1),
+              ),
+              content: Image.file(file));
+        });
   }
 
   Widget _buildOpeningImage() {
@@ -58,10 +96,14 @@ class _MyAppState extends State<MyApp> {
     return Column(
       children: <Widget>[
         Expanded(
-          child: Crop.file(_sample, key: cropKey),
+          child: Crop.file(
+            _file,
+            key: cropKey,
+            aspectRatio: 0.71,
+            chipRadius: 50,
+          ),
         ),
         Container(
-          padding: const EdgeInsets.only(top: 20.0),
           alignment: AlignmentDirectional.center,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -110,12 +152,12 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  Future<void> _cropImage() async {
+  Future<File> _cropImage() async {
     final scale = cropKey.currentState.scale;
     final area = cropKey.currentState.area;
     if (area == null) {
       // cannot crop, widget is not setup
-      return;
+      return null;
     }
 
     // scale up to use maximum possible number of pixels
@@ -136,5 +178,6 @@ class _MyAppState extends State<MyApp> {
     _lastCropped = file;
 
     debugPrint('$file');
+    return file;
   }
 }
