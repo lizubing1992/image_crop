@@ -100,7 +100,7 @@ class _MyAppState extends State<MyApp> {
             _file,
             key: cropKey,
             aspectRatio: 0.71,
-            chipRadius: 50,
+            chipRadius: 70,
           ),
         ),
         Container(

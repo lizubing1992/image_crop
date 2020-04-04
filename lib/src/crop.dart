@@ -6,7 +6,7 @@ const _kCropGridColor = const Color.fromRGBO(0xd0, 0xd0, 0xd0, 0.9);
 const _kCropOverlayActiveOpacity = 0.3;
 const _kCropOverlayInactiveOpacity = 0.7;
 const _kCropHandleColor = const Color.fromRGBO(0xd0, 0xd0, 0xd0, 1.0);
-const _kCropHandleSize = 10.0;
+const _kCropHandleSize = 0.1;
 const _kCropHandleHitSize = 48.0;
 const _kCropMinFraction = 0.1;
 
